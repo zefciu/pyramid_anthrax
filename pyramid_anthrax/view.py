@@ -1,9 +1,25 @@
 import sys
 from decorator import decorator
 
+import pyramid
+
+def _get_request(args):
+    return args[1] if len(args) == 2 else args[0]
+
+def form_renderer(Form, form_mode, action=None):
+    def form_renderer_(view, *view_args):
+        request = _get_request(view_args)
+        form = Form(mode=form_mode, action=action)
+        if request.method == 'POST':
+            form.__raw__ = request.POST
+        request.form = form
+        return view(*view_args)
+    return decorator(form_renderer_)
+
+
 def form_post(Form, on_invalid, form_mode):
     def form_post_(view, *view_args):
-        request = view_args[1] if len(view_args) == 2 else view_args[0]
+        request = _get_request(view_args)
         form = Form(form_mode)
         form.__raw__ = request.POST
         request.form = form
