@@ -17,10 +17,11 @@ def form_renderer(Form, form_mode, action=None):
     return decorator(form_renderer_)
 
 
-def form_post(Form, on_invalid, form_mode):
+def form_post(Form, on_invalid=None, form_mode=None):
     def form_post_(view, *view_args):
         request = _get_request(view_args)
         form = Form(form_mode)
+        form.kwargs['method'] = 'POST'
         form.__raw__ = request.POST
         request.form = form
         if not form.__valid__ and on_invalid is not None:
