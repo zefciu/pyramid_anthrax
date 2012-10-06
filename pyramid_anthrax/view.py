@@ -6,10 +6,15 @@ import pyramid
 def _get_request(args):
     return args[1] if len(args) == 2 else args[0]
 
-def form_renderer(Form, form_mode, action=None):
+def form_renderer(
+    Form=None, get_form_factory=None, form_mode=None, action=None
+):
     def form_renderer_(view, *view_args):
         request = _get_request(view_args)
-        form = Form(mode=form_mode, action=action)
+        if Form:
+            form = Form(mode=form_mode, action=action)
+        elif get_form_factory:
+            form = get_form_factory(*view_args)(mode=form_mode, action=action)
         if request.method == 'POST':
             form.__raw__ = request.POST
         request.form = form
@@ -17,10 +22,16 @@ def form_renderer(Form, form_mode, action=None):
     return decorator(form_renderer_)
 
 
-def form_post(Form, on_invalid=None, form_mode=None):
+def form_post(
+    Form=None, get_form_factory=None, on_invalid=None, form_mode=None, 
+    action=None
+):
     def form_post_(view, *view_args):
         request = _get_request(view_args)
-        form = Form(form_mode)
+        if Form:
+            form = Form(mode=form_mode, action=action)
+        elif get_form_factory:
+            form = get_form_factory(*view_args)(mode=form_mode, action=action)
         form.kwargs['method'] = 'POST'
         form.__raw__ = request.POST
         request.form = form
