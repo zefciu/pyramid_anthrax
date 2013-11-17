@@ -33,7 +33,8 @@ def form_post(
         elif get_form_factory:
             form = get_form_factory(*view_args)(mode=form_mode, action=action)
         form.kwargs['method'] = 'POST'
-        form.__raw__ = request.POST
+        if request.POST:
+            form.__raw__ = request.POST
         request.form = form
         if not form.__valid__ and on_invalid is not None:
             return pyramid.view.render_view_to_response(
