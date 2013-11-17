@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
       name = 'pyramid_anthrax',
-      version = '0.0.2',
+      version = '0.0.3',
       author = 'Szymon Pyżalski',
       author_email = 'zefciu <szymon@pythonista.net>',
       description =
